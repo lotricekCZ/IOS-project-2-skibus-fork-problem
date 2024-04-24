@@ -10,6 +10,7 @@ struct config
     unsigned ski_wait : 14;
     unsigned bus_ride : 10;
 };
+config cfg;
 
 void set_skiers(config *cfg, int skiers)
 {
