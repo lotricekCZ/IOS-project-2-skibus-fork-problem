@@ -3,7 +3,7 @@
 
 #include "print.h"
 #include "config.h"
-// #include "bus.h"
+#include "bus.h"
 
 enum skier_state
 {
@@ -43,11 +43,12 @@ void sk_change(skier *ski)
         ski->state = sk_breakfast;
         break;
     case sk_breakfast:
-        sleep(rand() % cfg.ski_wait); // should be safe since I initialised srand()
+        usleep(rand() % cfg.ski_wait); // should be safe since I initialised srand()
         ski->state = sk_waiting;
         break;
     case sk_waiting:
-        print("L %d: arrived to %d\n", ski->id, (int)(ski->bus_stop));
+        print("L %d: arrived to %d\n", ski->id, (int)(ski->bus_stop) + 1);
+        bs_inc(skibus, (int)(ski->bus_stop));
         ski->state = sk_boarding;
         break;
     case sk_boarding:

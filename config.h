@@ -56,7 +56,7 @@ void set_bus_ride(config *cfg, int bus_ride)
 {
     if (bus_ride > 1000 || bus_ride < 0)
     {
-        fprintf(stderr, "ERROR: Entry out of the bounds.\n");
+        fprintf(stderr, "ERROR: Entry BUS ride out of the bounds.\n");
         exit(EXIT_FAILURE);
     }
     cfg->bus_ride = bus_ride;

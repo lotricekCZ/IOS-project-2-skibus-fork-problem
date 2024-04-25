@@ -23,16 +23,16 @@ error pr_init()
     {
         fprintf(stderr, "%s:%d:\tsem_print init failed!\n", __FILE__, __LINE__);
         sem_close(&sem_print);
-        return SHM_ERR;
+        return SEM_ERR;
     }
     
-    if ((shm_pr_count = shmget(IPC_PRIVATE, sizeof(unsigned int), IPC_CREAT | 0666)) == -1)
+    if ((shm_pr_count = shmget(IPC_PRIVATE, sizeof(unsigned int), IPC_CREAT | 0666)) == SHMG_ERR)
     {
         fprintf(stderr, "%s:%d:\tCannot allocate shm_sem_print!\n", __FILE__, __LINE__);
         sem_close(&sem_print);
         return SHM_ERR;
     }
-    if ((pr_count = shmat(shm_pr_count, NULL, 0)) == (void *)-1)
+    if ((pr_count = shmat(shm_pr_count, NULL, 0)) == SHMA_ERR)
     {
         fprintf(stderr, "%s:%d:\tCannot allocate shm_sem_print\n", __FILE__, __LINE__);
         sem_close(&sem_print);
