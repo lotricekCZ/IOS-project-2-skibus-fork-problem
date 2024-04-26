@@ -27,8 +27,10 @@ int main(int argc, char **argv)
     set_wait(&cfg, atoi(argv[4]));
     set_bus_ride(&cfg, atoi(argv[5]));
     pid_t *pids = malloc((cfg.skiers + 1) * sizeof(pid_t));
+    cfg.out = fopen("proj2.out", "w");
     pr_init();
-    if(bs_init(&skibus)) exit(EXIT_FAILURE); // bs probably isn't the best name
+    if (bs_init(&skibus))
+        exit(EXIT_FAILURE); // bs probably isn't the best name
 
     for (size_t i = 0; i <= (unsigned int)cfg.skiers; i++)
     {
@@ -37,16 +39,16 @@ int main(int argc, char **argv)
         {
             srand(time(NULL) ^ (getpid() << 16)); // totally accurate rng (ironically, I guess)
             free(pids);
-            if(i == 0){
-                print("bus entry\n");
-                print("bus init\n");
+            if (i == 0)
+            {
                 bs_change(skibus);
-                print("bus end\n");
-                exit(EXIT_SUCCESS);    
+                fclose(cfg.out);
+                exit(EXIT_SUCCESS);
             }
             skier sk;
             sk_init(&sk, i, random() % (cfg.stops - 1));
             sk_change(&sk);
+            fclose(cfg.out);
             exit(EXIT_SUCCESS);
         }
         else if (pids[i] == -1)
@@ -58,19 +60,9 @@ int main(int argc, char **argv)
     for (size_t i = 0; i <= (unsigned int)cfg.skiers; i++)
     {
         pids[i] = wait(&status);
-        printf("Child with PID %ld exited with status 0x%x.\n", (long)pids[i], status);
+        // printf("Child with PID %ld exited with status 0x%x.\n", (long)pids[i], status);
     }
-    printf("ST1\tST2\tST3\tST4\tST5\tST6\tST7\tST8\tST9\n%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", 
-        skibus->waiting[0],
-        skibus->waiting[1],
-        skibus->waiting[2],
-        skibus->waiting[3],
-        skibus->waiting[4],
-        skibus->waiting[5],
-        skibus->waiting[6],
-        skibus->waiting[7],
-        skibus->waiting[8]
-        );
+    fclose(cfg.out);
     free(pids);
     bs_deinit(skibus);
     pr_deinit();

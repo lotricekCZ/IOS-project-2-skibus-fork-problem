@@ -46,9 +46,9 @@ void print(char *msg, ...)
     va_list args;
     va_start(args, msg);
     sem_wait(&sem_print);
-    printf("%d: ", (*pr_count)++);
-    vprintf(msg, args);
-    fflush(stdout);
+    fprintf(cfg.out, "%d: ", (*pr_count)++);
+    vfprintf(cfg.out, msg, args);
+    fflush(cfg.out);
     sem_post(&sem_print);
     va_end(args);
 }

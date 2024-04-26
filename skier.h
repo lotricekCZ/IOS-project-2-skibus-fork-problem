@@ -53,11 +53,16 @@ void sk_change(skier *ski)
         break;
     case sk_boarding: // sk boarding needs to first assure that it has boarding permission on that specific stop
         sem_wait(&(skibus->boarding_sem)[(int)(ski->bus_stop)]);
+        if (bs_free(skibus) == 0){ // inform skier no space is left and to give up the flag
+            sem_post(&(skibus->boarding_sem)[(int)(ski->bus_stop)]);
+            break;
+        }
         bs_board(skibus);
         print("L %d: boarding\n", ski->id);
         bs_dec(skibus, ski->bus_stop);
-        if(bs_free(skibus) == 0 || bs_get(skibus, (ski->bus_stop)) == 0) // inform bus to depart
+        if (bs_free(skibus) == 0 || bs_get(skibus, (ski->bus_stop)) == 0){ // inform bus to depart
             bs_depart(skibus);
+            }
         sem_post(&(skibus->boarding_sem)[(int)(ski->bus_stop)]);
         ski->state = sk_aboard;
         break;
@@ -70,7 +75,7 @@ void sk_change(skier *ski)
         print("L %d: going to ski\n", ski->id);
         ski->state = sk_done;
         sem_post(&(skibus->boarding_sem)[cfg.stops - 1]);
-        if(bs_aboard(skibus) == 0) // inform bus to depart
+        if (bs_aboard(skibus) == 0) // inform bus to depart
             bs_depart(skibus);
         break;
     default:

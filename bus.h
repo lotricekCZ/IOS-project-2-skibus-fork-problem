@@ -201,9 +201,7 @@ void bs_change(bus *bs)
             break;
         case bs_en_route:
             usleep(rand() % (cfg.bus_ride));
-            print("en route\n");
             bs_arrive(bs);
-            print("en stop\n");
             bs->state = bs_arrived;
             break;
         case bs_arrived:
@@ -218,7 +216,7 @@ void bs_change(bus *bs)
                 print("BUS: arrived to %d\n", (int)(bs->stop));
             }
 
-            if ((bs->stop == cfg.stops) || (bs->waiting[bs->stop - 1] && bs_free(bs) != 0)){
+            if (((bs->stop == cfg.stops) && bs_aboard(bs)) || (bs->waiting[bs->stop - 1] && bs_free(bs) != 0)){
                 sem_post(&bs->boarding_sem[bs->stop - 1]);
                 bs_wait(bs); // wait until everyone boards or exits
                 bs_depart(bs); // redo in order to negate effects of bs_wait decrementation
@@ -234,7 +232,6 @@ void bs_change(bus *bs)
                 bs->filled = 0;
                 if (bs->transported == cfg.skiers)
                 {
-                    print("%d transported out of %d", bs->transported, cfg.skiers);
                     usleep(rand() % cfg.bus_ride);
                     bs->state = bs_finish;
                 }
